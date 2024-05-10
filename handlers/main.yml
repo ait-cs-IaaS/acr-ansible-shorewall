@@ -1,11 +1,10 @@
 ---
+- name: Shorewall restart
+  ansible.builtin.service:
+    name: shorewall
+    state: "{{ 'restarted' if shorewall_startup == 1 else 'stopped' }}"
 
-- name: shorewall restart
-  service:
-    name:  shorewall
-    state: restarted
-
-- name: shorewall6 restart
-  service:
-    name:  shorewall6
+- name: Shorewall6 restart
+  ansible.builtin.service:
+    name: shorewall6
     state: restarted

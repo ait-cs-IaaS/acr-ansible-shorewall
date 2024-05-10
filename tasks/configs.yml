@@ -1,26 +1,26 @@
 ---
+- name: Set ip_forward
+  ansible.builtin.lineinfile:
+    dest: /etc/shorewall/shorewall.conf
+    line: IP_FORWARDING={{ shorewall_ipforward }}
+    regexp: ^IP_FORWARDING=
+    state: present
+  notify: Shorewall restart
 
-- name: set ip_forward
-  lineinfile: >
-    dest=/etc/shorewall/shorewall.conf
-    line="IP_FORWARDING={{ shorewall_ipforward }}"
-    regexp="^IP_FORWARDING="
-    state=present
-  notify:
-    - shorewall restart
-
-- name: config > Templates
-#  debug: msg="User {{ item.key }}"
-  template:
-    src:  "{{ item.key }}.j2"
+- name: Config > Templates
+  ansible.builtin.template:
+    src: "{{ item.key }}.j2"
     dest: "{{ shorewall_configs_dir }}/{{ item.key }}"
-  with_dict: shorewall_configs 
-  notify:
-    - shorewall restart
+  with_dict: "{{ shorewall_configs }}"
+  notify: Shorewall restart
 
-- name: config interfaces
-  template:
-    src:  "interfaces.j2"
+- name: Config interfaces
+  ansible.builtin.template:
+    src: interfaces.j2
     dest: "{{ shorewall_configs_dir }}/interfaces"
-  notify:
-    - shorewall restart
+  notify: Shorewall restart
+
+- name: Configure shorewall service autostart
+  ansible.builtin.service:
+    name: shorewall
+    enabled: "{{ 'yes' if shorewall_startup == 1 else 'no' }}"

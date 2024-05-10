@@ -1,9 +1,11 @@
 ---
-
-- include: debian.yml
+- ansible.builtin.include_tasks:
+    file: debian.yml
   when: ansible_os_family == 'Debian'
 
-- include: configs.yml
+- ansible.builtin.include_tasks:
+    file: configs.yml
 
-- include: configsipv6.yml
-  when: shorewall6_configs != False
+- ansible.builtin.include_tasks:
+    file: configsipv6.yml
+  when: shorewall6_enable
